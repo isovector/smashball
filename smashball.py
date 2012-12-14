@@ -3,6 +3,8 @@ __docformat__ = "reStructuredText"
 
 import sys,math
 
+sys.dont_write_bytecode = 1
+
 import pygame
 from pygame.locals import *
 from pygame.color import *
@@ -20,58 +22,13 @@ def cpflerpconst(f1, f2, d):
     """Linearly interpolate from f1 to f2 by no more than d."""
     return f1 + cpfclamp(f2 - f1, -d, d)
 
+from scene import *
+from entities import *
 
-class Entity(pymunk.Body):
-    def __init__(self, mass):
-        pymunk.Body.__init__(self, mass, pymunk.inf)
-        self.damage = 0
-        
-    def onRegister(self, space):
-        return
-        
-class Ball(Entity):
-    def __init__(self):
-        Entity.__init__(self, 5)
-        self.shape = pymunk.Circle(self, 12, (0, 0))
-        self.shape.color = pygame.color.THECOLORS['green']
-        self.shape.elasticity = 1
-        
-    def onRegister(self, space):
-        space.add(self.shape)
-        
-class Actor(Entity):
-    def __init__(self):
-        Entity.__init__(self, 5)
-        self.head = pymunk.Circle(self, 10, (0,5))
-        self.head2 = pymunk.Circle(self, 10, (0,13))
-        self.head2.elasticity = 0.95
-        self.feet = pymunk.Circle(self, 10, (0,-5))
 
-        self.head.layers = self.head2.layers = 0b1000
-        self.feet.collision_type = 1
-    
-    def onRegister(self, space):
-        space.add(self.head, self.head2, self.feet)
     
 
-class SceneGraph:
-    def __init__(self, screen, space):
-        self.space = space
-        self.screen = screen
-        self.entities = []
-    
-    def register(self, object):
-        self.entities.append(object)
-        self.space.add(object)
-        object.onRegister(self.space)
-    
-    def hitbox(self, pos, radius, vec, source):
-        pygame.draw.circle(self.screen, pygame.color.THECOLORS['pink'], to_pygame(pos, self.screen), radius)
-        for entity in self.entities:
-            if entity != source:
-                if pos.get_distance(entity.position) < radius:
-                    entity.damage += 10
-                    entity.velocity = vec * entity.damage / 100
+
     
 
 
