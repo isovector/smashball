@@ -3,10 +3,21 @@ from xml.dom.minidom import parse, parseString
 
 def getPoints(path):
     points = []
-    pathString = path.getAttribute("d")[2:]
-    for point in pathString.split(" "):
+    pathString = path.getAttribute("d")
+    mode = pathString[0]
+    
+    if not (mode == "M" or mode == "m"):
+        die("unsupported line mode")
+    
+    lastx, lasty = None, None
+    for point in pathString[2:].split(" "):
         x, y = point.split(",")
-        points.append((float(x), float(y)))
+        x, y = float(x), float(y)
+        if mode == "M" or lastx is None:
+            points.append((x, y))
+        elif mode == "m":
+            points.append((x + lastx, y + lasty))
+        lastx, lasty = x, y
     return points
     
 def getTimeStamps(texts):
@@ -60,12 +71,12 @@ for layer in dom.getElementsByTagName("g"):
                 hitboxes.append(getHitbox(path))
             else:
                 knockbacks.append(getPoints(path))
-        knockbacks = [ ((x[0][0], x[0][1]), distance(x[0], x[1])) for x in knockbacks ]
+                
+        knockbacks = [ ((x[0][0], x[0][1]), (x[1][0] - x[0][0], x[1][1] - x[0][1])) for x in knockbacks ]
         timestamps  = getTimeStamps(layer.getElementsByTagName("text"))
 
         hitKnocks = associate(hitboxes, knockbacks)
         hitTimes = associate(hitboxes, timestamps)
         
-        damage = [ ((x[0][0], x[0][1]), (x[1], y[1])) for x,y in zip(hitKnocks, hitTimes) ]
-        
+        damage = [ ((x[0][0], x[0][1]), (x[0][2], x[1], y[1])) for x,y in zip(hitKnocks, hitTimes) ]
         print(damage)

@@ -14,7 +14,7 @@
    id="svg2996"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="drawing.svg">
+   sodipodi:docname="movep.svg">
   <defs
      id="defs3" />
   <sodipodi:namedview
@@ -24,16 +24,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.3941125"
-     inkscape:cx="125.97049"
-     inkscape:cy="93.108191"
+     inkscape:zoom="1.2"
+     inkscape:cx="91.940976"
+     inkscape:cy="140.24864"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer5"
+     inkscape:current-layer="svg2996"
      showgrid="false"
-     inkscape:window-width="1016"
-     inkscape:window-height="621"
-     inkscape:window-x="210"
-     inkscape:window-y="147"
+     inkscape:window-width="1438"
+     inkscape:window-height="880"
+     inkscape:window-x="0"
+     inkscape:window-y="18"
      inkscape:window-maximized="0" />
   <metadata
      id="metadata3000">
@@ -146,7 +146,7 @@
          sodipodi:role="line"
          x="116.08336"
          y="98.530815"
-         id="tspan3143">2</tspan></text>
+         id="tspan3143">2:5</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -157,7 +157,7 @@
          sodipodi:role="line"
          id="tspan3149"
          x="86.031326"
-         y="87.629585">5</tspan></text>
+         y="87.629585">5:7</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -168,6 +168,6 @@
          sodipodi:role="line"
          id="tspan3153"
          x="56.273914"
-         y="69.657288">10</tspan></text>
+         y="69.657288">10:9</tspan></text>
   </g>
 </svg>
