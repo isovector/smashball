@@ -41,10 +41,10 @@ def cpflerpconst(f1, f2, d):
 class Actor(Entity):
     def __init__(self):
         Entity.__init__(self, 5)
-        self.head = pymunk.Circle(self, 10, (0,5))
-        self.head2 = pymunk.Circle(self, 10, (0,13))
+        self.head = pymunk.Circle(self, 18, (0,5))
+        self.head2 = pymunk.Circle(self, 18, (0,18))
         self.head2.elasticity = 0.95
-        self.feet = pymunk.Circle(self, 10, (0,-5))
+        self.feet = pymunk.Circle(self, 18, (0,-8))
 
         self.head.layers = self.head2.layers = 0b1000
         self.feet.collision_type = 1
@@ -53,18 +53,28 @@ class Actor(Entity):
         self.jumpsLeft = 1
         self.onGround = False
         
+        self.__currentAttack = None
+        
         self.__landing = {'p':Vec2d.zero(), 'n':0}
         self.__landedPrevious = False
-        self.__space = None
         self.__groundVelocity = Vec2d.zero()
                     
                     
-    def onRegister(self, space):
-        space.add(self.head, self.head2, self.feet)
-        self.__space = space
-        
+    def onRegister(self, scene):
+        Entity.onRegister(self, scene)
+        scene.space.add(self.head, self.head2, self.feet)
+    
+    def perform(self, attack):
+        if self.__currentAttack is None:
+            self.__currentAttack = attack.start(self)
         
     def update(self, delta):
+        if self.__currentAttack is not None:
+            try:
+                 self.__currentAttack.next()     
+            except StopIteration:
+                 self.__currentAttack = None
+        
         self.onGround = False
         
         grounding = {
@@ -95,24 +105,20 @@ class Actor(Entity):
             
         target_vx = 0
         
-        if self.velocity.x > .01:
-            self.direction = 1
-        elif self.velocity.x < -.01:
-            self.direction = -1
-        
-        keys = pygame.key.get_pressed()
-        if (keys[K_LEFT]):
-            self.direction = -1
-            target_vx -= PLAYER_VELOCITY
-        if (keys[K_RIGHT]):
-            self.direction = 1
-            target_vx += PLAYER_VELOCITY
+        if self.__currentAttack is None:
+            keys = pygame.key.get_pressed()
+            if (keys[K_LEFT]):
+                self.direction = -1
+                target_vx -= PLAYER_VELOCITY
+            if (keys[K_RIGHT]):
+                self.direction = 1
+                target_vx += PLAYER_VELOCITY
             
         self.feet.surface_velocity = target_vx,0
 
         
         if grounding['body'] != None:
-            self.feet.friction = -PLAYER_GROUND_ACCEL/self.__space.gravity.y
+            self.feet.friction = -PLAYER_GROUND_ACCEL/self.scene.space.gravity.y
             self.head.friciton = HEAD_FRICTION
         else:
             self.feet.friction, self.head.friction = 0,0
@@ -132,7 +138,7 @@ class Actor(Entity):
         
     def jump(self):
         if self.onGround or self.jumpsLeft > 0:                    
-            jump_v = math.sqrt(2.0 * JUMP_HEIGHT * abs(self.__space.gravity.y))
+            jump_v = math.sqrt(2.0 * JUMP_HEIGHT * abs(self.scene.space.gravity.y))
             self.velocity.y = self.__groundVelocity.y + jump_v;
             self.jumpsLeft -=1
         

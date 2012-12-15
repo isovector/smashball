@@ -13,22 +13,18 @@ import pymunk
 from pymunk.vec2d import Vec2d
 from pymunk.pygame_util import draw_space, from_pygame, to_pygame
 
-
-def cpfclamp(f, min_, max_):
-    """Clamp f between min and max"""
-    return min(max(f, min_), max_)
-
-def cpflerpconst(f1, f2, d):
-    """Linearly interpolate from f1 to f2 by no more than d."""
-    return f1 + cpfclamp(f2 - f1, -d, d)
-
 from scene import *
 from entities import *
 from actor import *
+from damage import *
+
+# --------------------------------------------------------
 
 width, height = 690,400
 fps = 60
 dt = 1./fps
+
+# --------------------------------------------------------
 
 def main():
     ### PyGame init
@@ -83,14 +79,14 @@ def main():
             elif event.type == MOUSEBUTTONDOWN and event.button == 1:
                 ball.apply_impulse((ball.position - body.position + Vec2d(0, 100)).normalized() * 1000)
             
-            elif event.type == KEYDOWN and event.key == K_SPACE:
-                scene.hitbox(body.position + Vec2d(20, 0), 20, Vec2d(0,400), body)
-                
             elif event.type == KEYDOWN and event.key == K_UP:
                 body.jump()
                 
-            elif event.type == KEYUP and event.key == K_UP:                
+            elif event.type == KEYUP and event.key == K_UP: 
                 body.endJump()
+                
+            if event.type == KEYDOWN and event.key == K_SPACE:
+                body.perform(TestAttack())
                 
         scene.update(dt)
         
