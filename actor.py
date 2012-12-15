@@ -82,6 +82,8 @@ class Actor(Entity):
                 self.__currentAttack = TestVNAttack().start(self)
             elif input.key == Key.VF:
                 self.__currentAttack = TestVFAttack().start(self)
+            elif input.key == Key.CN:
+                self.__currentAttack = ParsedAttack().start(self)
             else:
                 self.__currentAttack = TestAttack().start(self)
         

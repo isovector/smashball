@@ -55,12 +55,20 @@ def distance(a, b):
 
 dom = parse("./move.svg")
 dom = dom.getElementsByTagName("svg")[0]
+
+
+movement = None
+damage = None
 for layer in dom.getElementsByTagName("g"):
     type = layer.getAttribute("inkscape:label")
     if type == "Movement":
         points = getPoints(layer.getElementsByTagName("path")[0])
         timestamps  = getTimeStamps(layer.getElementsByTagName("text"))
-        print(associate(points, timestamps))
+        path = associate(points, timestamps)
+        
+        # differentiate
+        movement = [ ((y[0][0] - x[0][0], y[0][1] - x[0][1]), y[1]) for x,y in zip(path, path[1:]) ]
+
         
     elif type == "Damage":
         hitboxes = []
@@ -71,7 +79,8 @@ for layer in dom.getElementsByTagName("g"):
                 hitboxes.append(getHitbox(path))
             else:
                 knockbacks.append(getPoints(path))
-                
+        
+        # get the delta of each knockback vector
         knockbacks = [ ((x[0][0], x[0][1]), (x[1][0] - x[0][0], x[1][1] - x[0][1])) for x in knockbacks ]
         timestamps  = getTimeStamps(layer.getElementsByTagName("text"))
 
@@ -79,4 +88,21 @@ for layer in dom.getElementsByTagName("g"):
         hitTimes = associate(hitboxes, timestamps)
         
         damage = [ ((x[0][0], x[0][1]), (x[0][2], x[1], y[1])) for x,y in zip(hitKnocks, hitTimes) ]
-        print(damage)
+        
+
+
+print("# ---------------")
+print("class ParsedAttack(Attack):")
+print("    def start(self, instigator):")
+print("        scene = investigator.scene")
+print("        dir = Vec2d(investigator.direction, -1)")
+
+lastTime = 0
+for hitbox in damage:
+    time, amount = [ float(x) for x in hitbox[1][2].split(":") ]
+    deltaTime = time - lastTime
+    print("        for i in range(%d):" % (deltaTime))
+    print("            yield")
+    tuple = (hitbox[0][0], hitbox[0][1], hitbox[1][0], amount, hitbox[1][1][0], hitbox[1][1][1])
+    print("        scene.hitbox(instigator.position + Vec2d(%d, %d) * dir, %d, Damage(DamageType.NORMAL, %d, Vec2d(%d, %d) * dir * 10), instigator)" % tuple)
+    lastTime = time
