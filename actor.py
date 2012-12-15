@@ -8,6 +8,8 @@ import pymunk
 from pymunk.vec2d import Vec2d
 from pymunk.pygame_util import draw_space, from_pygame, to_pygame
 
+from damage import *
+from controller import *
 from entities import *
 
 # --------------------------------------------------------
@@ -53,6 +55,8 @@ class Actor(Entity):
         self.jumpsLeft = 1
         self.onGround = False
         
+        self.controller = Controller(self)
+        
         self.__currentAttack = None
         
         self.__landing = {'p':Vec2d.zero(), 'n':0}
@@ -64,11 +68,32 @@ class Actor(Entity):
         Entity.onRegister(self, scene)
         scene.space.add(self.head, self.head2, self.feet)
     
-    def perform(self, attack):
-        if self.__currentAttack is None:
-            self.__currentAttack = attack.start(self)
+    
+    def onInput(self, input):
+        if input.key == Key.JUMP:
+            if input.down and (self.onGround or self.jumpsLeft > 0):
+                jump_v = math.sqrt(2.0 * JUMP_HEIGHT * abs(self.scene.space.gravity.y))
+                self.velocity.y = self.__groundVelocity.y + jump_v;
+                self.jumpsLeft -=1
+            elif not input.down:
+                self.velocity.y = min(self.velocity.y, JUMP_CUTOFF_VELOCITY)
+        elif not input.down:
+            if input.key == Key.VN:
+                self.__currentAttack = TestVNAttack().start(self)
+            elif input.key == Key.VF:
+                self.__currentAttack = TestVFAttack().start(self)
+            else:
+                self.__currentAttack = TestAttack().start(self)
+        
         
     def update(self, delta):
+        self.controller.update()
+        
+        if len(self.controller.events) > 0:
+            inputEvent = self.controller.pop()
+            if self.__currentAttack is None:
+                self.onInput(inputEvent)
+        
         if self.__currentAttack is not None:
             try:
                  self.__currentAttack.next()     
@@ -108,14 +133,15 @@ class Actor(Entity):
         if self.__currentAttack is None:
             keys = pygame.key.get_pressed()
             if (keys[K_LEFT]):
-                self.direction = -1
+                if self.onGround:
+                    self.direction = -1
                 target_vx -= PLAYER_VELOCITY
             if (keys[K_RIGHT]):
-                self.direction = 1
+                if self.onGround:
+                    self.direction = 1
                 target_vx += PLAYER_VELOCITY
             
         self.feet.surface_velocity = target_vx,0
-
         
         if grounding['body'] != None:
             self.feet.friction = -PLAYER_GROUND_ACCEL/self.scene.space.gravity.y
@@ -134,14 +160,3 @@ class Actor(Entity):
             self.__landedPrevious = True
         else:
             self.__landedPrevious = False
-        
-        
-    def jump(self):
-        if self.onGround or self.jumpsLeft > 0:                    
-            jump_v = math.sqrt(2.0 * JUMP_HEIGHT * abs(self.scene.space.gravity.y))
-            self.velocity.y = self.__groundVelocity.y + jump_v;
-            self.jumpsLeft -=1
-        
-        
-    def endJump(self):
-        self.velocity.y = min(self.velocity.y, JUMP_CUTOFF_VELOCITY)

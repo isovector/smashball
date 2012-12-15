@@ -75,18 +75,8 @@ def main():
             if event.type == QUIT or \
                 event.type == KEYDOWN and (event.key in [K_ESCAPE, K_q]):  
                 running = False
-            
-            elif event.type == MOUSEBUTTONDOWN and event.button == 1:
-                ball.apply_impulse((ball.position - body.position + Vec2d(0, 100)).normalized() * 1000)
-            
-            elif event.type == KEYDOWN and event.key == K_UP:
-                body.jump()
-                
-            elif event.type == KEYUP and event.key == K_UP: 
-                body.endJump()
-                
-            if event.type == KEYDOWN and event.key == K_SPACE:
-                body.perform(TestAttack())
+            else:
+                body.controller.onEvent(event)
                 
         scene.update(dt)
         

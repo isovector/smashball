@@ -27,6 +27,25 @@ class Attack:
         
 # --------------------------------------------------------
 
+class TestVNAttack(Attack):
+    def start(self, instigator):
+        offset = Vec2d(30, 0) * instigator.direction
+        for i in range(3):
+            instigator.scene.hitbox(instigator.position + offset, 15, Damage(DamageType.NORMAL, 10, offset * 8), instigator)
+            yield
+        for i in range(3):
+            yield
+            
+class TestVFAttack(Attack):
+    def start(self, instigator):
+        offset = Vec2d(30, 0) * instigator.direction
+        for i in range(3):
+            instigator.scene.hitbox(instigator.position + offset, 15, Damage(DamageType.NORMAL, 10, offset * 10), instigator)
+            instigator.scene.hitbox(instigator.position + offset * 2, 25, Damage(DamageType.NORMAL, 10, offset * 20), instigator)
+            yield
+        for i in range(3):
+            yield
+
 class TestAttack(Attack):
     def start(self, instigator):
         for i in range(10):
