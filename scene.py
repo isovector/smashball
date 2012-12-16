@@ -39,7 +39,8 @@ class SceneGraph:
     def draw(self, screen):
         for y in [50,100,150,200,250,300]:
             color = pygame.color.THECOLORS['darkgrey']
-            pygame.draw.line(screen, color, (10,y), (680,y), 1)
+            pygame.draw.line(screen, color, (10,y), (690,y), 1)
+        pygame.draw.line(screen, color, (350,30), (350,350), 1)
         
         draw_space(screen, self.space)
         

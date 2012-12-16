@@ -78,7 +78,7 @@ class Actor(Entity):
                 self.jumpsLeft -=1
             elif not input.down:
                 self.velocity.y = min(self.velocity.y, JUMP_CUTOFF_VELOCITY)
-        elif not input.down:
+        elif input.down:
             if input.key == Key.VN:
                 self.__currentAttack = TestVNAttack().start(self)
             elif input.key == Key.VF:
@@ -89,6 +89,8 @@ class Actor(Entity):
                 self.__currentAttack = TestCDAttack().start(self)
             elif input.key == Key.CU:
                 self.__currentAttack = TestCUAttack().start(self)
+            elif input.key == Key.CN:
+                self.__currentAttack = TestCNAttack().start(self)
             else:
                 self.__currentAttack = TestAttack().start(self)
         

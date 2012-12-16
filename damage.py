@@ -87,7 +87,7 @@ class TestCUAttack(Attack):
         dir = Vec2d(instigator.direction, -1)
         
         instigator.moveStyle = MoveStyle.ANIM_DRIVEN
-        instigator.velocity = Vec2d(100, 400) * Vec2d(instigator.direction, 1)
+        instigator.velocity = Vec2d(100, 450) * Vec2d(instigator.direction, 1)
         for i in range(10):
             scene.hitbox(instigator.position + Vec2d(30, -20) * dir, 20, Damage(DamageType.NORMAL, 5, Vec2d(32, -50) * dir * 10), instigator)
             yield
@@ -95,4 +95,15 @@ class TestCUAttack(Attack):
         instigator.moveStyle = MoveStyle.PHYSICS_DRIVEN
         instigator.helpless = True
 
-
+class TestCNAttack(Attack):
+    def start(self, instigator):
+        dir = Vec2d(instigator.direction, -1)
+        
+        instigator.moveStyle = MoveStyle.ANIM_DRIVEN
+        instigator.velocity = Vec2d(0, 250) * Vec2d(instigator.direction, 1)
+        for i in range(10):
+            yield
+        instigator.scene.hitbox(instigator.position + Vec2d(35, 28) * dir, 25, Damage(DamageType.NORMAL, 10, Vec2d(-50, 0) * dir * 10), instigator)
+        for i in range(15):
+            yield
+        instigator.moveStyle = MoveStyle.PHYSICS_DRIVEN

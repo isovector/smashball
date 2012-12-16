@@ -20,7 +20,7 @@ from damage import *
 
 # --------------------------------------------------------
 
-width, height = 690,400
+width, height = 700,400
 fps = 60
 dt = 1./fps
 
@@ -39,14 +39,11 @@ def main():
     space = pymunk.Space()   
     space.gravity = 0,-1000
     # box walls 
-    static = [pymunk.Segment(space.static_body, (10, 50), (330, 50), 5)
-                , pymunk.Segment(space.static_body, (330, 50), (350, 50), 5)
-                , pymunk.Segment(space.static_body, (350, 50), (680, 50), 5)
-                , pymunk.Segment(space.static_body, (680, 50), (680, 370), 5)
-                , pymunk.Segment(space.static_body, (680, 370), (10, 370), 5)
+    static = [pymunk.Segment(space.static_body, (10, 50), (690, 50), 5)
+                , pymunk.Segment(space.static_body, (690, 50), (690, 370), 5)
+                , pymunk.Segment(space.static_body, (690, 370), (10, 370), 5)
                 , pymunk.Segment(space.static_body, (10, 370), (10, 50), 5)
                 ]  
-    static[1].color = pygame.color.THECOLORS['red']
     
     for s in static:
         s.friction = 1.
@@ -82,6 +79,7 @@ def main():
         
         scene.draw(screen)
         screen.blit(font.render("fps: " + str(clock.get_fps()), 1, THECOLORS["white"]), (0,0))
+        screen.blit(font.render("%d%%" % ball.damage, 1, THECOLORS["white"]), (600,0))
         pygame.display.flip()
         
         space.step(dt)
