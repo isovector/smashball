@@ -62,7 +62,7 @@ def main():
     body.position = 100,100
     
     ball = Ball()
-    ball.position = 200,200
+    ball.position = 150,90
 
     scene.register(ball)
     scene.register(body)

@@ -5,10 +5,6 @@ from enum import *
 
 # --------------------------------------------------------
 
-DamageType = enum('NORMAL')
-
-# --------------------------------------------------------
-
 class Damage:
     def __init__(self, type = DamageType.NORMAL, amount = 0, knockback = None):
         self.type = type
@@ -36,6 +32,15 @@ class TestVNAttack(Attack):
         for i in range(3):
             yield
             
+class TestVDAttack(Attack):
+    def start(self, instigator):
+        dir = Vec2d(instigator.direction, -1)
+        for i in range(3):
+            instigator.scene.hitbox(instigator.position + Vec2d(35, 10) * dir, 20, Damage(DamageType.NORMAL, 10, Vec2d(5, -40) * dir * 10), instigator)
+            yield
+        for i in range(3):
+            yield
+            
 class TestVFAttack(Attack):
     def start(self, instigator):
         offset = Vec2d(30, 0) * (instigator.direction, 1)
@@ -56,17 +61,38 @@ class TestAttack(Attack):
         for i in range(10):
             yield
             
-class ParsedAttack(Attack):
+class TestCDAttack(Attack):
     def start(self, instigator):
         scene = instigator.scene
         dir = Vec2d(instigator.direction, -1)
-        for i in range(2):
+        
+        instigator.moveStyle = MoveStyle.ANIM_DRIVEN
+        instigator.velocity = Vec2d(-400, 200) * Vec2d(instigator.direction, 1)
+        for i in range(10):
+            scene.hitbox(instigator.position + Vec2d(40, -10) * dir, 25, Damage(DamageType.NORMAL, 5, Vec2d(5.2 * i, -5.2 * (10 - i)) * dir * 10), instigator)
             yield
-        scene.hitbox(instigator.position + Vec2d(115, 0) * dir, 12, Damage(DamageType.NORMAL, 5, Vec2d(0, -19) * dir * 10), instigator)
-        for i in range(3):
-            yield
-        scene.hitbox(instigator.position + Vec2d(91, -15) * dir, 10, Damage(DamageType.NORMAL, 7, Vec2d(22, -14) * dir * 10), instigator)
+            
         for i in range(5):
             yield
-        scene.hitbox(instigator.position + Vec2d(63, -35) * dir, 9, Damage(DamageType.NORMAL, 9, Vec2d(52, -2) * dir * 10), instigator)
+        
+        instigator.moveStyle = MoveStyle.PHYSICS_DRIVEN
+        instigator.helpless = True
+        
+        for i in range(15):
+            yield
+
+class TestCUAttack(Attack):
+    def start(self, instigator):
+        scene = instigator.scene
+        dir = Vec2d(instigator.direction, -1)
+        
+        instigator.moveStyle = MoveStyle.ANIM_DRIVEN
+        instigator.velocity = Vec2d(100, 400) * Vec2d(instigator.direction, 1)
+        for i in range(10):
+            scene.hitbox(instigator.position + Vec2d(30, -20) * dir, 20, Damage(DamageType.NORMAL, 5, Vec2d(32, -50) * dir * 10), instigator)
+            yield
+            
+        instigator.moveStyle = MoveStyle.PHYSICS_DRIVEN
+        instigator.helpless = True
+
 

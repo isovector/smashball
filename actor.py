@@ -11,6 +11,7 @@ from pymunk.pygame_util import draw_space, from_pygame, to_pygame
 from damage import *
 from controller import *
 from entities import *
+from enum import *
 
 # --------------------------------------------------------
 
@@ -51,16 +52,16 @@ class Actor(Entity):
         self.head.layers = self.head2.layers = 0b1000
         self.feet.collision_type = 1
         
+        self.moveStyle = MoveStyle.PHYSICS_DRIVEN
         self.direction = 1
         self.jumpsLeft = 1
         self.onGround = False
+        self.helpless = False
         
+        self.isBusy = False
         self.controller = Controller(self)
         
         self.__currentAttack = None
-        
-        self.__landing = {'p':Vec2d.zero(), 'n':0}
-        self.__landedPrevious = False
         self.__groundVelocity = Vec2d.zero()
                     
                     
@@ -82,8 +83,12 @@ class Actor(Entity):
                 self.__currentAttack = TestVNAttack().start(self)
             elif input.key == Key.VF:
                 self.__currentAttack = TestVFAttack().start(self)
-            elif input.key == Key.CN:
-                self.__currentAttack = ParsedAttack().start(self)
+            elif input.key == Key.VD:
+                self.__currentAttack = TestVDAttack().start(self)
+            elif input.key == Key.CD:
+                self.__currentAttack = TestCDAttack().start(self)
+            elif input.key == Key.CU:
+                self.__currentAttack = TestCUAttack().start(self)
             else:
                 self.__currentAttack = TestAttack().start(self)
         
@@ -91,12 +96,14 @@ class Actor(Entity):
     def update(self, delta):
         self.controller.update()
         
+        self.isBusy = self.__currentAttack is not None
+        
         if len(self.controller.events) > 0:
             inputEvent = self.controller.pop()
-            if self.__currentAttack is None:
+            if not self.isBusy and not self.helpless:
                 self.onInput(inputEvent)
         
-        if self.__currentAttack is not None:
+        if self.isBusy:
             try:
                  self.__currentAttack.next()     
             except StopIteration:
@@ -124,41 +131,35 @@ class Actor(Entity):
         
         if grounding['body'] != None and abs(grounding['normal'].x/grounding['normal'].y) < self.feet.friction:
             self.onGround = True
+            self.helpless = False
             self.jumpsLeft = 1
     
-        self.__groundVelocity = Vec2d.zero()
-        if self.onGround:
-            self.__groundVelocity = grounding['body'].velocity
+        if self.moveStyle == MoveStyle.PHYSICS_DRIVEN:
+            self.__groundVelocity = Vec2d.zero()
+            if self.onGround:
+                self.__groundVelocity = grounding['body'].velocity
+                
+            target_vx = 0
             
-        target_vx = 0
-        
-        if self.__currentAttack is None:
-            keys = pygame.key.get_pressed()
-            if (keys[K_LEFT]):
-                if self.onGround:
-                    self.direction = -1
-                target_vx -= PLAYER_VELOCITY
-            if (keys[K_RIGHT]):
-                if self.onGround:
-                    self.direction = 1
-                target_vx += PLAYER_VELOCITY
+            if not self.isBusy:
+                xdir = self.controller.xdir
+                if xdir != 0:
+                    if self.onGround:
+                        self.direction = xdir
+                    target_vx += PLAYER_VELOCITY * xdir
+                
+            self.feet.surface_velocity = target_vx,0
             
-        self.feet.surface_velocity = target_vx,0
+            if grounding['body'] != None:
+                self.feet.friction = -PLAYER_GROUND_ACCEL/self.scene.space.gravity.y
+                self.head.friciton = HEAD_FRICTION
+            else:
+                self.feet.friction, self.head.friction = 0,0
+            
+            # Air control
+            if not self.isBusy:
+                if grounding['body'] == None:
+                    self.velocity.x = cpflerpconst(self.velocity.x, target_vx + self.__groundVelocity.x, PLAYER_AIR_ACCEL*delta)
+            
+            self.velocity.y = max(self.velocity.y, -FALL_VELOCITY)
         
-        if grounding['body'] != None:
-            self.feet.friction = -PLAYER_GROUND_ACCEL/self.scene.space.gravity.y
-            self.head.friciton = HEAD_FRICTION
-        else:
-            self.feet.friction, self.head.friction = 0,0
-        
-        # Air control
-        if grounding['body'] == None:
-            self.velocity.x = cpflerpconst(self.velocity.x, target_vx + self.__groundVelocity.x, PLAYER_AIR_ACCEL*delta)
-        
-        self.velocity.y = max(self.velocity.y, -FALL_VELOCITY)
-        
-        if abs(grounding['impulse'].y) / self.mass > 200 and not self.__landedPrevious:
-            self.__landing = {'p':grounding['position'],'n':5}
-            self.__landedPrevious = True
-        else:
-            self.__landedPrevious = False

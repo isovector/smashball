@@ -7,17 +7,12 @@ from enum import *
 
 # --------------------------------------------------------
 
-Key = enum("JUMP", "GRAB", "CN", "CU", "CD", "CF", "CB", "VN", "VU", "VD", "VF", "VB")
-
-# --------------------------------------------------------
-
 class InputEvent:
     def __init__(self, key, down):
         self.key = key
         self.down = down
 
 # --------------------------------------------------------
-
 
 class Controller:
     def __init__(self, actor):
