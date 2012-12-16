@@ -48,6 +48,10 @@ class Actor(Entity):
         self.head2 = pymunk.Circle(self, 18, (0,18))
         self.head2.elasticity = 0.95
         self.feet = pymunk.Circle(self, 18, (0,-8))
+        
+        self.head.color = pygame.Color(200, 78, 0)
+        self.head2.color = pygame.Color(200, 78, 0)
+        self.feet.color = pygame.Color(200, 78, 0)
 
         self.head.layers = self.head2.layers = 0b1000
         self.feet.collision_type = 1
@@ -71,6 +75,8 @@ class Actor(Entity):
     
     
     def onInput(self, input):
+        self.controller.update()
+        
         if input.key == Key.JUMP:
             if input.down and (self.onGround or self.jumpsLeft > 0):
                 jump_v = math.sqrt(2.0 * JUMP_HEIGHT * abs(self.scene.space.gravity.y))

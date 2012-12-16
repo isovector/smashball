@@ -20,14 +20,14 @@ class SceneGraph:
         object.onRegister(self)
    
     
-    def hitbox(self, pos, radius, damage, source):
+    def hitbox(self, attack, pos, radius, damage, source):
         numHit = 0
         pygame.draw.circle(self.screen, pygame.color.THECOLORS['pink'], to_pygame(pos, self.screen), radius)
         for entity in self.entities:
             if entity != source:
                 if pos.get_distance(entity.position) < radius:
                     numHit += 1
-                    entity.onDamaged(damage)
+                    entity.onDamaged(attack, damage)
         return numHit
     
     
