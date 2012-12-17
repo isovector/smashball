@@ -4,6 +4,15 @@ from pymunk.vec2d import Vec2d
 
 # --------------------------------------------------------
 
+def _rotateCircleOffset(self, angle):
+    offset = Vec2d(*self.offset)
+    offset.rotate_degrees(angle)
+    self.unsafe_set_offset((offset[0], offset[1]))
+
+pymunk.Circle.rotate_degrees = _rotateCircleOffset
+
+# --------------------------------------------------------
+
 class Entity(pymunk.Body):
     def __init__(self, mass):
         pymunk.Body.__init__(self, mass, pymunk.inf)
@@ -41,6 +50,14 @@ class Entity(pymunk.Body):
         
     def draw(self, screen):
         return
+        
+        
+    def set_rotation(self, angle):
+        return
+    
+
+    def reset_rotation(self):
+        return
 
 # --------------------------------------------------------
         
@@ -61,4 +78,5 @@ class Ball(Entity):
         if self.position[1] < 30:
             self.velocity = Vec2d(0, 0)
             self.position = Vec2d(350, 80)
+            self.damage = 0
         

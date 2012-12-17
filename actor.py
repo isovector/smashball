@@ -43,11 +43,11 @@ def cpflerpconst(f1, f2, d):
         
 class Actor(Entity):
     def __init__(self):
-        Entity.__init__(self, 5)
-        self.head = pymunk.Circle(self, 18, (0,5))
-        self.head2 = pymunk.Circle(self, 18, (0,18))
+        Entity.__init__(self, 2)
+        self.head = pymunk.Circle(self, 18)
+        self.head2 = pymunk.Circle(self, 18)
         self.head2.elasticity = 0.95
-        self.feet = pymunk.Circle(self, 18, (0,-8))
+        self.feet = pymunk.Circle(self, 18)
         
         self.head.color = pygame.Color(200, 78, 0)
         self.head2.color = pygame.Color(200, 78, 0)
@@ -55,6 +55,8 @@ class Actor(Entity):
 
         self.head.layers = self.head2.layers = 0b1000
         self.feet.collision_type = 1
+        
+        self.reset_rotation()
         
         self.moveStyle = MoveStyle.PHYSICS_DRIVEN
         self.direction = 1
@@ -170,4 +172,16 @@ class Actor(Entity):
                     self.velocity.x = cpflerpconst(self.velocity.x, target_vx + self.__groundVelocity.x, PLAYER_AIR_ACCEL*delta)
             
             self.velocity.y = max(self.velocity.y, -FALL_VELOCITY)
+        
+        
+    def set_rotation(self, angle):
+        self.head2.rotate_degrees(angle)
+        self.head.rotate_degrees(angle)
+        self.feet.rotate_degrees(angle)
+        
+        
+    def reset_rotation(self):
+        self.head.unsafe_set_offset((0,5))
+        self.head2.unsafe_set_offset((0,18))
+        self.feet.unsafe_set_offset((0,-8))
         

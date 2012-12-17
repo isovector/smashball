@@ -13,24 +13,24 @@ class Damage:
         self.amount = amount
         self.knockback = knockback
         self.hasKnockback = True
-        
+
         if knockback is None:
             self.hasKnockback = False
-            
+
 # --------------------------------------------------------
 
 class Attack:
     def __init__(self):
         hash = int(random() * 1000000)
         self.__hash = hash - hash % 10
-    
+
     def start(self, instigator):
         return
-    
-    
+
+
     def uniq(self, i):
         return self.__hash + i
-        
+
 # --------------------------------------------------------
 
 class TestVNAttack(Attack):
@@ -41,7 +41,7 @@ class TestVNAttack(Attack):
             yield
         for i in range(3):
             yield
-            
+
 class TestVDAttack(Attack):
     def start(self, instigator):
         dir = Vec2d(instigator.direction, -1)
@@ -50,7 +50,7 @@ class TestVDAttack(Attack):
             yield
         for i in range(3):
             yield
-            
+
 class TestVFAttack(Attack):
     def start(self, instigator):
         offset = Vec2d(30, 0) * (instigator.direction, 1)
@@ -72,24 +72,24 @@ class TestAttack(Attack):
             yield
         for i in range(10):
             yield
-            
+
 class TestCDAttack(Attack):
     def start(self, instigator):
         scene = instigator.scene
         dir = Vec2d(instigator.direction, -1)
-        
+        new_angle = 60 * instigator.direction
+
         instigator.moveStyle = MoveStyle.ANIM_DRIVEN
         instigator.velocity = Vec2d(-400, 200) * Vec2d(instigator.direction, 1)
-        for i in range(10):
-            scene.hitbox(self.uniq(0), instigator.position + Vec2d(40, -10) * dir, 25, Damage(DamageType.NORMAL, 5 + i / 2, Vec2d(5.2 * i, -5.2 * (10 - i)) * dir * 10), instigator)
+        instigator.set_rotation(new_angle)
+        for i in range(15):
+            scene.hitbox(self.uniq(0), instigator.position + Vec2d(25, -25) * dir, 30, Damage(DamageType.NORMAL, 5 + i / 2, Vec2d(5.2 * i, -5.2 * (10 - i)) * dir * 10), instigator)
             yield
-            
-        for i in range(5):
-            yield
-        
+
+        instigator.set_rotation(-new_angle)
         instigator.moveStyle = MoveStyle.PHYSICS_DRIVEN
         instigator.helpless = True
-        
+
         for i in range(15):
             yield
 
@@ -97,25 +97,25 @@ class TestCUAttack(Attack):
     def start(self, instigator):
         scene = instigator.scene
         dir = Vec2d(instigator.direction, -1)
-        
+
         instigator.moveStyle = MoveStyle.ANIM_DRIVEN
         instigator.velocity = Vec2d(100, 450) * Vec2d(instigator.direction, 1)
         for i in range(10):
             scene.hitbox(self.uniq(0), instigator.position + Vec2d(30, -20) * dir, 20, Damage(DamageType.NORMAL, 12 - i / 2, Vec2d(32, -50) * dir * 10), instigator)
             yield
-            
+
         instigator.moveStyle = MoveStyle.PHYSICS_DRIVEN
         instigator.helpless = True
 
 class TestCNAttack(Attack):
     def start(self, instigator):
         dir = Vec2d(instigator.direction, -1)
-        
+
         instigator.moveStyle = MoveStyle.ANIM_DRIVEN
         instigator.velocity = Vec2d(0, 250) * Vec2d(instigator.direction, 1)
         for i in range(10):
             yield
         instigator.scene.hitbox(self.uniq(0), instigator.position + Vec2d(35, 28) * dir, 25, Damage(DamageType.NORMAL, 3, Vec2d(-50, 0) * dir * 10), instigator)
-        for i in range(15):
+        for i in range(25):
             yield
         instigator.moveStyle = MoveStyle.PHYSICS_DRIVEN
