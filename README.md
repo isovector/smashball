@@ -1,3 +1,3 @@
 # Smashball
 
-A game by Jenna and Sandy
+A game by ~~Jenna and~~ Sandy
