@@ -13,7 +13,7 @@ from pygame.color import *
 
 import pymunk
 from pymunk.vec2d import Vec2d
-from pymunk.pygame_util import draw_space, from_pygame, to_pygame
+from pymunk.pygame_util import draw, from_pygame, to_pygame
 
 from scene import *
 from entities import *
@@ -71,7 +71,7 @@ def main():
         screen.fill(pygame.color.THECOLORS["black"])
 
         scene.update(dt)
-        
+
         for event in pygame.event.get():
             if event.type == QUIT or \
                 event.type == KEYDOWN and (event.key in [K_ESCAPE, K_q]):
